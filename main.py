@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog 
 from sentence_transformers import SentenceTransformer, util
+from scraper import get_abstract
 
-
+#abrindo janela de selecionar arquivos 
 def select_file():
   path = filedialog.askopenfilename(title="Selecione um arquivo .txt", filetypes=[("Text files", "*.txt")]) 
   if path:
@@ -35,3 +36,8 @@ if file1 and file2:
   print(f"\nÍndice de Correlação: {percentage:.2f}%")
 else:
     print("Arquivos não selecionados corretamente.")
+
+
+
+################################################
+#meus_dados = get_abstract(num_paginas=2)
