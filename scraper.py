@@ -1,9 +1,19 @@
 #FAZENDO SCRAPER, PREPARANDO INFOS PRO FINE TUNING 
 
+import json
 import requests
 from bs4 import BeautifulSoup
 from langdetect import detect
 import time
+
+#salvando oq peguei do scielo num json para poder fazer fine tuning depois
+def save_data(data, file_name="scielo.json"):
+    try:
+        with open(file_name, "w", encoding="utf-8") as f: #abro arquivo pra write
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        print('Salvou no json')
+    except Exception as e:
+        print(f"erro ao salvar {e}")
 
 
 def get_papers(num_pages = 1):
@@ -12,7 +22,9 @@ def get_papers(num_pages = 1):
     results = []
     
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
+        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+        'Referer': 'https://www.google.com/'
     }
     
 
@@ -33,19 +45,23 @@ def get_papers(num_pages = 1):
         ##S0101-28002026000200303-scl > div.col-md-11.col-sm-10.col-xs-11 > div:nth-child(1) > a (classe da div é 'line')
             
         #pega o título que tem o link
-        papers = BeautifulSoup.select('div.line a')
+        papers = html.select('.item .line a')
+        valid_papers = [p for p in papers if 'script=sci_arttext' in p.get('href', '')] #pega só os links que levam a um artigo, se tiver link de rede social, ou pesquisa, pula
         
-        for p in papers:
-            ptTitle = p.get('tile') #o título em PORTUGUÊS está dentro do <a> no title
+        for vp in valid_papers:
+            ptTitle = vp.get('title') #o título em PORTUGUÊS está dentro do <a> no title
             
             #tento ver se tem título em pt, para garantir que não vai dar ruim no meu Bertimbau
             if not ptTitle:
-                ptTitle = p.get_text(strip=True)
+                ptTitle = vp.get_text(strip=True)
+                
+            if len(ptTitle) < 20: 
+                continue
 
             try:
                 if detect(ptTitle) == "pt":
                     paper_title = ptTitle
-                    paper_url = p['href']
+                    paper_url = vp['href']
 
                     #pegar resumo
                     print(f"  -> Extraindo resumo de: {paper_title[:50]}...")
@@ -53,25 +69,39 @@ def get_papers(num_pages = 1):
                 
                     if (abstract):
                         results.append({"Título": paper_title, "resumo": abstract})
-                    time.sleep(1.5)
+                        print("COLETOU MSM")
+                        time.sleep(2)
+                        
+                    if abstract:
+                        item = {"Título": paper_title, "resumo": abstract}
+                        results.append(item) #pego o titulo = o titulo em portigues e o resumo que peguei juntando os <p> 
+                        save_data(results)
+                        time.sleep(2) #pra não levar um ban cis s2
                                         
                 else:
-                    #se o título não for em pt, pula
-                    print(f"Pulando artigo em inglês: {ptTitle[:30]}...")
-                    continue
+                    #se o título não for em pt, pula. Comentando pro terminal não ficar cheio
+                    #print(f"Pulando artigo em inglês: {ptTitle[:30]}...")
+                    pass
             except:
                 continue
+        
 
-
-def get_abstract(paper_url, headers):
-    #articleText > div.articleSection.articleSection--resumo --> achei inspecionando com F12
-    #links = html.select('div.articleSection articleSection--resumo')
-    print()
+def get_abstract(paper_url, headers):  
+    try:
+        response = requests.get(paper_url, headers=headers)
+        html = BeautifulSoup(response.text, 'html.parser')
+    
+        #articleText > div.articleSection.articleSection--resumo --> achei inspecionando com F12
+        abstract_div = html.select_one('div.articleSection.articleSection--resumo')
+        
+        #se eu conseguir entrar na página e pegar a div com o RESUMO
+        if abstract_div:
+            #a div com o resumo tem vários <p> com os textos, vou juntar num texto só
+            text = abstract_div.find_all('p')
+            full_abstract = " ".join([t.get_text(strip=True) for t in text])
+            return full_abstract
+    except:
+        return None
+    return None
     
     
-    
-    
-    #fiz: entrei no site, peguei HTML, filtrei pela div, peguei o título em português, peguei o link e entrei no artigo
-    #fazer: pegar a div com o RESUMO no artigo, que tem vários <p>. Juntar os <p> num texto só 
-    #tento o resumo num texto só, posso chamar get_abstract para percorrer um n x de paginas e pegar varios resumo
-    #aí uso eles para fazer fine tuning. Amanhã 22/02 farei o resto do scrapper. Aniversário do meu pai 21/02 bjs
