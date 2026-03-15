@@ -78,7 +78,7 @@ def get_papers(num_pages = 1):
                 print(e)
                 continue
 
-            print(f" -> Extraindo resumo de: {paper_title[:50]}...")
+            print(f"Extraindo resumo de: {paper_title[:50]}...")
             abstract = get_abstract(paper_url, headers)
             
             if abstract:
@@ -87,7 +87,7 @@ def get_papers(num_pages = 1):
                 save_data(results)
                 time.sleep(2)
             else:
-                print(f"  -> AVISO: Resumo não encontrado para: {paper_title[:30]}")
+                print(f"error: Resumo não encontrado para: {paper_title[:30]}")
 
 def get_abstract(paper_url, headers):  
     try:
