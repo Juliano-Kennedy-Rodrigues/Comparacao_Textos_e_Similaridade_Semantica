@@ -1,4 +1,4 @@
-# Pastas de Modelos (Muito pesadas para o GitHub)
+# pesadas demais
 bertimbau_tuned_scielo/
 bertimbau_tuned_scielo_final/
 
@@ -6,6 +6,6 @@ bertimbau_tuned_scielo_final/
 __pycache__/
 *.pyc
 
-# Resultados locais (opcional, se não quiser subir no GitHub)
+# minhas tabelas só 
 *.csv
 *.png
