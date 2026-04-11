@@ -2,7 +2,8 @@ from sentence_transformers import SentenceTransformer, util
 import json
 import os 
 import pandas as pd
-import matplotlib.pyplot as plt
+import table_maker as table_maker
+
 
 base_dir = os.path.dirname(os.path.abspath(__file__)) #caminho desse arquivo, até a pasta só
 json_path = os.path.join(base_dir, "scielo.json")
@@ -64,7 +65,7 @@ for anc_index in anchors:
             
             temp_similarity.append({
                 "ID": anchor_tile[:50],
-                "Artigo Comparado": file[i]['Título'][:55],
+                "Artigo Comparado": file[i]['Título'],
                 "Similaridade": similarity
             })
             
@@ -84,20 +85,6 @@ image_path = os.path.join(base_dir, "tabela_artigo.png")
 #gera uma tabela csv
 table = pd.concat(results4_table)  
 table.to_csv(csv_path, index=False, encoding="utf-8-sig")
-print("Tabela 'ancoras_resultados.csv' gerada")
+print("Tabela 'ancoras_resultados_tunados.csv' gerada")
 
-
-#gera uma tabela em imagem, para melhor vizualização 
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.axis('off')
-tab = ax.table(cellText=table.values, colLabels=table.columns, loc='center', cellLoc='center')
-tab.auto_set_font_size(False)
-tab.set_fontsize(10)
-tab.scale(2, 2) 
-
-plt.savefig(image_path, bbox_inches='tight', dpi=300)
-print("Imagem da tabela ok")
-
-
-#percentage = similarity.item()*100
-#print(f"\nÍndice de Correlação: artigo {r} e artigo {j} é de {percentage:.2f}%")
+img_tabela = table_maker.makeTable('projeto/ancoras_resultados.csv', 'projeto/resultados_imagens/')
