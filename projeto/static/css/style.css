@@ -1,3 +1,118 @@
-p{
-    color: red;
+#principal{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;   
 }
+
+#secondDiv{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px; 
+  flex-direction: column;
+}
+#titulo{
+  font: Arial;
+  font-size: 28px;
+  color: black;
+  font-weight: bold;
+  height: 100%; 
+  margin: 0;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+ 
+}
+
+#labelDiv {
+  height: 100%; 
+  margin: 0;
+  display: flex;
+  justify-content: center; 
+  align-items: center;  
+  padding-top: 4%; 
+  flex-direction: row;
+}
+
+#secondFile{
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  padding-top: 4%;
+}
+
+
+#lista {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  color: slategray;
+  width: 500px;
+  max-width: 100%;
+  min-height: 200px; 
+  height: auto;      
+  padding: 15px;    
+}
+
+#preview {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;       
+  max-height: 160px;     
+  gap: 40px;             
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#preview li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  width: 38%;            
+  height: auto;          
+}
+
+#buttomDiv{
+  padding-top: 2%; 
+  padding-bottom: 1%;
+  height: 100%; 
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+}
+
+#drop-zone, #drop-zone2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 500px;
+  max-width: 100%;
+  height: 200px;
+  padding: 1em;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  color: slategray;
+  cursor: pointer;
+}
+
+#file-input, #file-input2 {
+  display: none;
+}
+
+
