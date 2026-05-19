@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <p id="titulo">COMPARAÇÃO SEMÂNTICA DE ARQUIVOS</p>
+
+    <div id="divInstrucoes"> 
+        <ul id="intrucoes">
+            <li>A primeira opção permite comparar 5 arquivos entre si, onde todos os arquivos são comparados com todos os outros (menos a si prório)</li>
+            <li>Para isso, clique no botão "Comparação Geral".</li>
+            <li>A segunda opção permite comparar até 9 arquivos com 1 arquivo específico.</li>
+            <li>Para isso, clique no botão "Comparação Específica".</li>
+        </ul>
+    </div>
+        
+    <div id="buttomDivChoices"> 
+        <button id="general-btn">Comparação Geral</button>
+        <button id="especific-btn">Comparação Específica</button>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
