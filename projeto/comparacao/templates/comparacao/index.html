@@ -20,8 +20,8 @@
     </div>
         
     <div id="buttomDivChoices"> 
-        <button id="general-btn">Comparação Geral</button>
-        <button id="especific-btn">Comparação Específica</button>
+        <a href="{% url 'cincoArquivos' %}" id="general-btn">Comparação Geral</a>
+        <a href="{% url 'dezArquivos' %}" id="especific-btn">Comparação Específica</a>
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>

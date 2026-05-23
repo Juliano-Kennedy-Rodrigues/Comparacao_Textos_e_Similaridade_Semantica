@@ -1,4 +1,5 @@
 {% load static %}
+{% csrf_token %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +14,10 @@
     <div id="divInstrucoes"> 
         <ul id="intrucoes">
             <li>Clique nas caixas ou arraste os arquivos para slecioná-los</li>
-            <li>Note que o máximo de arquivos é 6 (1 principal e até 5 para comparações com o principal).</li>
+            <li>Note que o máximo de arquivos é 10 (1 principal e até 9 para comparações com o principal).</li>
             <li>Na primeira caixa, coloque o arquivo principal, que será comparado aos outros.</li>
-            <li>Na segunda caixa, coloque até 5 arquivos para serem comparados ao arquivo principal.</li>
-            <li>Caso coloque mais de 6 arquivos, receberá uma mensagem de erro e terá que selecionar novamente.</li>
+            <li>Na segunda caixa, coloque até 9 arquivos para serem comparados ao arquivo principal.</li>
+            <li>Caso coloque mais de 10 arquivos, receberá uma mensagem de erro e terá que selecionar novamente.</li>
             <li>Caso coloque arquivos errados, clique no botão "Limpar" e selecione novamente.</li>
             <li>Se houver um arquivo principal e, pelo menos, um arquivo a ser comparado, clique no botão "Comparar".</li>
             <li>Por favor, espere enquanto o programa compara seus arquivos. O resultado será exibido na caixa abaixo dos botões!</li>
@@ -46,7 +47,8 @@
 
         <div id="buttomDiv"> 
             <button id="clear-btn">Limpar</button>
-            <button id="compare-btn">Comparar</button>
+            <button id="compare-btn" onclick="enviarParaComparacao()">Comparar</button>
+            <a href="{% url 'index' %}" id="back-btn">Voltar</a>
         </div>
 
         <div id="lista"> 

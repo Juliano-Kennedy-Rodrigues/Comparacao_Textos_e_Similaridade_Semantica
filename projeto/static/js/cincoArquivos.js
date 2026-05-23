@@ -42,7 +42,6 @@ function displayFiles(files) {
 
 }
 
-
 function dropHandler(ev) {
     ev.preventDefault();
     ev.stopPropagation();
@@ -50,6 +49,66 @@ function dropHandler(ev) {
     const files = ev.dataTransfer.files; 
     displayFiles(files);
 }
+
+async function enviarParaComparacao() {
+    const fileInput = document.getElementById("file-input");
+    const files = fileInput.files;
+
+    if (files.length < 2) {
+        alert("Por favor, selecione pelo menos 2 arquivos para comparar.");
+        return;
+    }
+
+    const formData = new FormData();
+    
+    for (let i = 0; i < files.length; i++) {
+        formData.append('arquivos', files[i]);
+    }
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+        const response = await fetch('/comparar/', { // URL que vamos criar no Django
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+
+            console.log("Dados recebidos do Django:", data.resultados);
+
+
+            const resultadoDiv = document.getElementById("previewsHere"); 
+            
+            if (resultadoDiv) {
+                resultadoDiv.innerHTML = "<h3>Resultados da Similaridade (BERTimbau)</h3>";
+
+                // 3. Faz um loop pelos resultados e cria o HTML para cada comparação
+                data.resultados.forEach(item => {
+                    resultadoDiv.innerHTML += `
+                        <div class="resultado-item" style="margin-bottom: 10px; padding: 10px; border-left: 4px solid #007bff; background: #f9f9f9;">
+                            <p style="margin: 0;"><strong>Âncora:</strong> ${item.Artigo_Ancora}</p>
+                            <p style="margin: 0;"><strong>Comparado:</strong> ${item.Artigo_Comparado}</p>
+                            <p style="margin: 5px 0 0 0; color: #28a745; font-weight: bold;">Similaridade: ${item.Similaridade}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                console.error("Erro: Não encontrei a div com id='resultado' no HTML.");
+            }
+
+        } else {
+            alert("Erro no processamento: " + data.error);
+        }
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+    }
+}
+
 
 // Listeners essenciais
 dropZone.addEventListener("dragover", (e) => {
@@ -73,4 +132,9 @@ fileInput.addEventListener("change", (e) => {
 clearBtn.addEventListener("click", () => {
     preview.innerHTML = "";
     fileInput.value = "";
+
+    const resultadoDiv = document.getElementById("previewsHere");
+    if (resultadoDiv) {
+        resultadoDiv.innerHTML = "";
+    }
 });

@@ -1,4 +1,5 @@
 {% load static %}
+{% csrf_token %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +37,8 @@
     <div id="secondDiv"> 
         <div id="buttomDiv"> 
             <button id="clear-btn">Limpar</button>
-            <button id="compare-btn">Comparar</button>
+            <button id="compare-btn" onclick="enviarParaComparacao()">Comparar</button>
+            <a href="{% url 'index' %}" id="back-btn">Voltar</a>
         </div>
 
         <div id="lista"> 
