@@ -11,11 +11,12 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Endpoint ativo oficial do Router Hugging Face para o modelo BERTimbau
-API_URL = "https://router.huggingface.co/hf-inference/models/neuralmind/bert-base-portuguese-cased"
+API_URL = "https://router.huggingface.co/hf-inference/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
+# Token configurado no Render
 HF_TOKEN = os.getenv("HF_TOKEN")
 
+# Sessão com retries automatizados
 session = requests.Session()
 retries = Retry(
     total=3,
