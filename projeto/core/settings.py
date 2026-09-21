@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-by3qh1g8580apme$z%u8xtcfq%rhyx8$w_co9i#qqs**-mol6s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'comparacao-textos-e-similaridade.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
