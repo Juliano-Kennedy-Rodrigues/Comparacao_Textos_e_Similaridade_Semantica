@@ -14,12 +14,14 @@ def index(request):
     return render(request, 'index.html')
 
 def cincoArquivos(request):
-    """Renderiza a página para comparação de até 5 arquivos."""
     return render(request, 'cincoArquivos.html')
 
 def dezArquivos(request):
-    """Renderiza a página para comparação de até 10 arquivos."""
     return render(request, 'dezArquivos.html')
+
+
+
+
 
 def extrair_texto(arquivo):
     """Lê o conteúdo do arquivo enviado (.txt ou .pdf) e retorna como texto."""
@@ -56,8 +58,8 @@ def obter_embedding(texto):
 
     return embedding_medio.reshape(1, -1)
 
-@csrf_exempt
-def comparar(request):
+
+def comparar_textos(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método não permitido.'}, status=405)
 
