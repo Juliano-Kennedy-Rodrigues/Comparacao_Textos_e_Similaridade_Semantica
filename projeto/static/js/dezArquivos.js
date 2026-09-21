@@ -2,83 +2,112 @@ const dropZone = document.getElementById("drop-zone");
 const dropZone2 = document.getElementById("drop-zone2");
 const preview = document.getElementById("preview");
 const fileInput = document.getElementById("file-input");
-const fileInput2 = document.getElementById("file-input2")
+const fileInput2 = document.getElementById("file-input2");
 const clearBtn = document.getElementById("clear-btn");
 
 const allowedTypes = ["text/plain", "application/pdf"];
-const MAX_FILES = 10; 
-var fileInput_number = 0;
-var controle = 0;
+const MAX_FILES = 10; // 1 Principal + até 9 para comparação
 
-function displayFiles(files) {
-    const fileArray = Array.from(files);
-    const jaExistentes = preview.querySelectorAll("li").length;
-    const totalTentativa = jaExistentes + fileArray.length;
+// Acumuladores independentes para cada caixa
+let principalDT = new DataTransfer();
+let comparacaoDT = new DataTransfer();
 
-    if (totalTentativa > MAX_FILES) {
-        alert(`Operação cancelada! Você tentou colocar ${fileArray.length} arquivo(s), mas o limite total é de ${MAX_FILES}. Limpe a lista ou selecione menos arquivos.`);
-        fileInput.value = ""; 
-        fileInput2.value = "";
-        return; 
+function validarArquivo(file) {
+    const extensaoValida = file.name.toLowerCase().endsWith(".txt") || file.name.toLowerCase().endsWith(".pdf");
+    return allowedTypes.includes(file.type) || extensaoValida;
+}
+
+function atualizarPreview() {
+    preview.innerHTML = "";
+
+    if (principalDT.files.length > 0) {
+        const file = principalDT.files[0];
+        const li = document.createElement("li");
+        li.className = "file-wrapper";
+        li.innerHTML = `
+            <div class="file-item">
+                <span class="file-icon">${file.name.toLowerCase().endsWith(".pdf") ? "📄" : "📝"}</span>
+                <span class="file-name">${file.name}</span> <strong style="color: #007bff;">(Principal)</strong>
+            </div>
+        `;
+        preview.appendChild(li);
     }
 
-    const todosSaoValidos = fileArray.every(file => 
-        allowedTypes.includes(file.type) || file.name.toLowerCase().endsWith(".txt")
-    );
+    for (let i = 0; i < comparacaoDT.files.length; i++) {
+        const file = comparacaoDT.files[i];
+        const li = document.createElement("li");
+        li.className = "file-wrapper";
+        li.innerHTML = `
+            <div class="file-item">
+                <span class="file-icon">${file.name.toLowerCase().endsWith(".pdf") ? "📄" : "📝"}</span>
+                <span class="file-name">${file.name}</span>
+            </div>
+        `;
+        preview.appendChild(li);
+    }
+}
 
-    if (!todosSaoValidos) {
-        alert("Operação cancelada! Um ou mais arquivos selecionados não são TXT ou PDF.");
-        fileInput.value = "";
-        fileInput2.value = "";
+function adicionarPrincipal(files) {
+    if (files.length === 0) return;
+
+    const file = files[0]; // Aceita apenas 1 como principal
+    if (!validarArquivo(file)) {
+        alert(`O ficheiro "${file.name}" não é válido. Aceites apenas .txt e .pdf.`);
         return;
     }
 
-
-    for (const file of fileArray) {
-
-        const li = document.createElement("li");
-        li.className = "file-wrapper";
-
-        li.innerHTML = `
-            <div class="file-item">
-            <span class="file-icon">${file.name.toLowerCase().endsWith(".pdf") ? "📄" : "📝"}</span>
-            <span class="file-name">${file.name}</span>
-            </div>
-        `;
-
-        preview.appendChild(li);
-        console.log(preview.children)
-
-    }
+    // Substitui o ficheiro principal anterior, se existir
+    principalDT = new DataTransfer();
+    principalDT.items.add(file);
+    atualizarPreview();
 }
 
-function dropHandler(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    
-    const files = ev.dataTransfer.files; 
-    displayFiles(files);
+function adicionarComparacao(files) {
+    const fileArray = Array.from(files);
+
+    const totalAtual = principalDT.files.length + comparacaoDT.files.length;
+    if (totalAtual + fileArray.length > MAX_FILES) {
+        alert(`Operação cancelada! O limite total é de ${MAX_FILES} ficheiros (1 principal + até 9 de comparação).`);
+        return;
+    }
+
+    for (const file of fileArray) {
+        if (!validarArquivo(file)) {
+            alert(`O ficheiro "${file.name}" não é válido. Aceites apenas .txt e .pdf.`);
+            return;
+        }
+    }
+
+    for (const file of fileArray) {
+        comparacaoDT.items.add(file);
+    }
+
+    atualizarPreview();
 }
 
 async function enviarParaComparacao() {
-    const fileInput = document.getElementById("file-input");
-    const files = [...fileInput.files, ...fileInput2.files];    
+    const files = [...principalDT.files, ...comparacaoDT.files];
 
-    if (files.length < 2) {
-        alert("Por favor, selecione pelo menos 2 arquivos para comparar.");
+    if (principalDT.files.length === 0) {
+        alert("Por favor, adicione 1 ficheiro principal na primeira caixa.");
+        return;
+    }
+
+    if (comparacaoDT.files.length === 0) {
+        alert("Por favor, adicione pelo menos 1 ficheiro para comparação na segunda caixa.");
         return;
     }
 
     const formData = new FormData();
-    
     for (let i = 0; i < files.length; i++) {
         formData.append('arquivos', files[i]);
     }
 
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrftoken = csrfInput ? csrfInput.value : '';
 
     try {
-        const response = await fetch('/comparar/', { // URL que vamos criar no Django
+        const response = await fetch('/comparar/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken
@@ -87,17 +116,12 @@ async function enviarParaComparacao() {
         });
 
         const data = await response.json();
+
         if (response.ok) {
-
-            console.log("Dados recebidos do Django:", data.resultados);
-
-
-            const resultadoDiv = document.getElementById("previewsHere"); 
-            
+            const resultadoDiv = document.getElementById("previewsHere");
             if (resultadoDiv) {
-                resultadoDiv.innerHTML = "<h3>Resultados da Similaridade (BERTimbau)</h3>";
+                resultadoDiv.innerHTML = "<h3>Resultados da Similaridade Semântica</h3>";
 
-                // 3. Faz um loop pelos resultados e cria o HTML para cada comparação
                 data.resultados.forEach(item => {
                     resultadoDiv.innerHTML += `
                         <div class="resultado-item" style="margin-bottom: 10px; padding: 10px; border-left: 4px solid #007bff; background: #f9f9f9;">
@@ -107,90 +131,57 @@ async function enviarParaComparacao() {
                         </div>
                     `;
                 });
-            } else {
-                console.error("Erro: Não encontrei a div com id='resultado' no HTML.");
             }
-
         } else {
             alert("Erro no processamento: " + data.error);
         }
     } catch (error) {
         console.error("Erro na requisição:", error);
+        alert("Ocorreu um erro ao enviar os ficheiros para comparação.");
     }
 }
 
-// Listeners essenciais
-dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.classList.add("drag-over");
-});
-
-dropZone2.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone2.classList.add("drag-over");
-});
-
-dropZone.addEventListener("dragleave", () => {
-    dropZone.classList.remove("drag-over");
-});
-
-dropZone2.addEventListener("dragleave", () => {
-    dropZone2.classList.remove("drag-over");
+// Event Listeners - Drag and Drop
+[dropZone, dropZone2].forEach(zone => {
+    zone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        zone.classList.add("drag-over");
+    });
+    zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
 });
 
 dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
     dropZone.classList.remove("drag-over");
-    dropHandler(e);
-
-    if (fileInput_number >= 1){
-        alert(`Operação cancelada! Apenas um arquivo principal pode ser comparado com os outros arquivos por vez.`);
-        fileInput.value = ""; 
-        fileInput2.value = "";
-        console.log(fileInput.value)
-        return;
-    }
-
-    fileInput_number++;
+    adicionarPrincipal(e.dataTransfer.files);
 });
 
 dropZone2.addEventListener("drop", (e) => {
+    e.preventDefault();
     dropZone2.classList.remove("drag-over");
-    dropHandler(e);
-    controle++
+    adicionarComparacao(e.dataTransfer.files);
 });
 
 fileInput.addEventListener("change", (e) => {
-    displayFiles(e.target.files);
-    if (fileInput_number >= 1){
-        alert(`Operação cancelada! Apenas um arquivo principal pode ser comparado com os outros arquivos por vez.`);
-        console.log(fileInput_number)
-        preview.children[fileInput_number + controle].innerHTML = "";
-        fileInput.value = ""; 
-        fileInput2.value = "";
-        console.log(fileInput.value)
-        fileInput_number++;
-        return;
-    }
-    fileInput_number++;
-    alert(fileInput_number)
+    adicionarPrincipal(e.target.files);
+    fileInput.value = ""; 
 });
 
 fileInput2.addEventListener("change", (e) => {
-    displayFiles(e.target.files);
-    controle++;
+    adicionarComparacao(e.target.files);
+    fileInput2.value = "";
 });
 
+// Botão Limpar
 clearBtn.addEventListener("click", () => {
-    preview.innerHTML = "";
+    principalDT = new DataTransfer();
+    comparacaoDT = new DataTransfer();
     fileInput.value = "";
     fileInput2.value = "";
-    fileInput_number = 0
+    preview.innerHTML = "";
 
-    const resultadoDiv = document.getElementById('previewsHere')
+    const resultadoDiv = document.getElementById("previewsHere");
     if (resultadoDiv) {
-        console.log("Limpando conteúdo antigo:", resultadoDiv.innerHTML);
-        resultadoDiv.innerHTML = "";
+        resultadoDiv.innerHTML = '<ul id="preview"></ul>';
     }
 });
-
-

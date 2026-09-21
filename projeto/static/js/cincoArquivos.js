@@ -4,12 +4,11 @@ const fileInput = document.getElementById("file-input");
 const clearBtn = document.getElementById("clear-btn");
 
 const allowedTypes = ["text/plain", "application/pdf"];
-const MAX_FILES = 6; // 1 Principal + até 5 para comparação
+const MAX_FILES = 6;
 
 let acumuladorArquivos = new DataTransfer();
 
 function atualizarPreview() {
-    // 1. Limpa o container visual
     preview.innerHTML = "";
 
     const arquivos = acumuladorArquivos.files;
@@ -30,8 +29,6 @@ function atualizarPreview() {
         `;
         preview.appendChild(li);
     }
-
-    fileInput.files = acumuladorArquivos.files;
 }
 
 function processarArquivosAdicionados(novosArquivos) {
@@ -51,7 +48,6 @@ function processarArquivosAdicionados(novosArquivos) {
         }
     }
 
-    // Adiciona os novos arquivos ao acumulador
     for (const file of fileArray) {
         acumuladorArquivos.items.add(file);
     }
@@ -136,12 +132,11 @@ fileInput.addEventListener("change", (e) => {
     if (e.target.files.length > 0) {
         processarArquivosAdicionados(e.target.files);
     }
-    // Reseta o valor do input para permitir re-selecionar o mesmo arquivo se necessário
     fileInput.value = "";
 });
 
 clearBtn.addEventListener("click", () => {
-    // Reseta o acumulador de arquivos
+    // Esvazia o acumulador e limpa a tela
     acumuladorArquivos = new DataTransfer();
     fileInput.value = "";
     preview.innerHTML = "";
