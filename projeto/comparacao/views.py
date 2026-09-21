@@ -11,8 +11,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Endpoint do Router do Hugging Face
-API_URL = "https://router.huggingface.co/pipeline/feature-extraction/neuralmind/bert-base-portuguese-cased"
+API_URL = "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased"
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
@@ -36,6 +35,7 @@ def dezArquivos(request):
     return render(request, 'comparacao/dezArquivos.html')
 
 
+# Funções Auxiliares
 def extrair_texto(arquivo):
     nome = arquivo.name.lower()
     if nome.endswith('.pdf'):
@@ -83,6 +83,7 @@ def obter_embedding(texto):
     return embedding_medio.reshape(1, -1)
 
 
+# View Principal de Comparação
 @csrf_exempt
 def comparar_textos(request):
     if request.method != 'POST':
