@@ -64,7 +64,6 @@ rich==14.3.2
 safetensors==0.7.0
 scikit-learn==1.8.0
 scipy==1.17.0
-sentence-transformers==5.2.2
 setuptools==82.0.0
 shellingham==1.5.4
 six==1.17.0
@@ -73,7 +72,6 @@ sqlparse==0.5.5
 sympy==1.14.0
 threadpoolctl==3.6.0
 tokenizers==0.22.2
-torch==2.10.0
 tqdm==4.67.3
 transformers==5.1.0
 typer==0.23.1
