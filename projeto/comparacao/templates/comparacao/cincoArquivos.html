@@ -1,51 +1,46 @@
 {% load static %}
-{% csrf_token %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+    <title>Comparação de Arquivos</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    {% csrf_token %}
     <p id="titulo">COMPARAÇÃO SEMÂNTICA DE ARQUIVOS</p>
 
     <div id="divInstrucoes"> 
         <ul id="intrucoes">
-            <li>Clique nas caixas ou arraste os arquivos para slecioná-los</li>
-            <li>Note que o máximo de arquivos é 6 (1 principal e até 5 para comparações com o principal).</li>
-            <li>Na primeira caixa, coloque o arquivo principal, que será comparado aos outros.</li>
-            <li>Na segunda caixa, coloque até 5 arquivos para serem comparados ao arquivo principal.</li>
-            <li>Caso coloque mais de 6 arquivos, receberá uma mensagem de erro e terá que selecionar novamente.</li>
-            <li>Caso coloque arquivos errados, clique no botão "Limpar" e selecione novamente.</li>
-            <li>Se houver um arquivo principal e, pelo menos, um arquivo a ser comparado, clique no botão "Comparar".</li>
-            <li>Por favor, espere enquanto o programa compara seus arquivos. O resultado será exibido na caixa abaixo dos botões!</li>
+            <li>Clique na caixa ou arraste os arquivos para selecioná-los.</li>
+            <li>O primeiro arquivo selecionado será o <strong>arquivo principal (âncora)</strong>.</li>
+            <li>Você pode selecionar até 5 arquivos adicionais para comparar com o principal (máximo de 6 arquivos).</li>
+            <li>Formatos aceitos: apenas <strong>.txt</strong> e <strong>.pdf</strong>.</li>
+            <li>Caso precise recomeçar, clique no botão "Limpar".</li>
+            <li>Com pelo menos 2 arquivos selecionados, clique em "Comparar".</li>
         </ul>
     </div>
-        
 
     <div id="principal">
         <div id="labelDiv">
-            <label id="drop-zone">
-            Clique ou arraste o arquivo principal .txt ou .pdf.
-            <input type="file" id="file-input" multiple accept="txt/*" />
+            <label id="drop-zone" style="cursor: pointer; display: block; padding: 20px; border: 2px dashed #ccc;">
+                Clique ou arraste os arquivos (.txt ou .pdf) aqui.
+                <input type="file" id="file-input" multiple accept=".txt,.pdf" style="display: none;" />
             </label>
         </div>
     </div>
 
     <div id="secondDiv"> 
-        <div id="buttomDiv"> 
+        <div id="buttomDiv" style="margin-top: 15px;"> 
             <button id="clear-btn">Limpar</button>
             <button id="compare-btn" onclick="enviarParaComparacao()">Comparar</button>
             <a href="{% url 'index' %}" id="back-btn">Voltar</a>
         </div>
 
-        <div id="lista"> 
+        <div id="lista" style="margin-top: 15px;"> 
             <div id="previewsHere"> 
-                <ul id="preview">
-
-                </ul>
+                <ul id="preview"></ul>
             </div>
         </div>    
     </div>
