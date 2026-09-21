@@ -1,18 +1,16 @@
 import io
+import requests
 import numpy as np
 from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
-from huggingface_hub import InferenceClient
-from django.shortcuts import render
 
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-client = InferenceClient(
-    model="neuralmind/bert-base-portuguese-cased",
-    task="feature-extraction"
-)
+API_URL = "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased"
 
+# Views de Templates
 def index(request):
     return render(request, 'comparacao/index.html')
 
@@ -22,14 +20,8 @@ def cincoArquivos(request):
 def dezArquivos(request):
     return render(request, 'comparacao/dezArquivos.html')
 
-
-
-
-
 def extrair_texto(arquivo):
-    """Lê o conteúdo do arquivo enviado (.txt ou .pdf) e retorna como texto."""
     nome = arquivo.name.lower()
-    
     if nome.endswith('.pdf'):
         pdf_reader = PdfReader(io.BytesIO(arquivo.read()))
         texto = ""
@@ -43,15 +35,21 @@ def extrair_texto(arquivo):
         except UnicodeDecodeError:
             return conteudo.decode('iso-8859-1', errors='ignore')
 
-@csrf_exempt
 def obter_embedding(texto):
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
     
-    response = client.feature_extraction(texto_truncado)
+    payload = {
+        "inputs": texto_truncado,
+        "options": {"wait_for_model": True}
+    }
     
-    embeddings = np.array(response)
+    response = requests.post(API_URL, json=payload)
+    response.raise_for_status()
+    
+    dados = response.json()
+    embeddings = np.array(dados)
+    
     if embeddings.ndim == 3:
-        
         embedding_medio = np.mean(embeddings[0], axis=0)
     elif embeddings.ndim == 2:
         embedding_medio = np.mean(embeddings, axis=0)
@@ -60,7 +58,7 @@ def obter_embedding(texto):
 
     return embedding_medio.reshape(1, -1)
 
-
+@csrf_exempt
 def comparar_textos(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método não permitido.'}, status=405)
