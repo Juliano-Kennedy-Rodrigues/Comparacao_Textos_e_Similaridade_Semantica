@@ -11,9 +11,13 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-API_URL = "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased"
+# Novo endpoint oficial da API Serverless Router da Hugging Face
+API_URL = "https://router.huggingface.co/hf-inference/v1/pipeline/feature-extraction"
+MODEL_NAME = "neuralmind/bert-base-portuguese-cased"
+
 
 HF_TOKEN = os.getenv("HF_TOKEN")
+
 
 session = requests.Session()
 retries = Retry(
@@ -35,7 +39,6 @@ def dezArquivos(request):
     return render(request, 'comparacao/dezArquivos.html')
 
 
-# Funções Auxiliares
 def extrair_texto(arquivo):
     nome = arquivo.name.lower()
     if nome.endswith('.pdf'):
@@ -63,6 +66,7 @@ def obter_embedding(texto):
         headers["Authorization"] = f"Bearer {HF_TOKEN}"
     
     payload = {
+        "model": MODEL_NAME,
         "inputs": texto_truncado,
         "options": {"wait_for_model": True}
     }
