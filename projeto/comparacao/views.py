@@ -8,7 +8,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-client = InferenceClient(model="neuralmind/bert-base-portuguese-cased")
+client = InferenceClient(
+    model="neuralmind/bert-base-portuguese-cased",
+    task="feature-extraction"
+)
 
 def index(request):
     return render(request, 'comparacao/index.html')
@@ -42,7 +45,6 @@ def extrair_texto(arquivo):
 
 @csrf_exempt
 def obter_embedding(texto):
-    """Obtém os embeddings do texto através da API de Inferência do Hugging Face."""
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
     
     response = client.feature_extraction(texto_truncado)
