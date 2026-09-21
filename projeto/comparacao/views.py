@@ -3,12 +3,25 @@ import requests
 import numpy as np
 from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-API_URL = "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased"
+
+API_URL = "https://router.huggingface.co/pipeline/feature-extraction/neuralmind/bert-base-portuguese-cased"
+
+
+session = requests.Session()
+retries = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[500, 502, 503, 504]
+)
+session.mount('https://', HTTPAdapter(max_retries=retries))
+
 
 # Views de Templates
 def index(request):
@@ -19,6 +32,7 @@ def cincoArquivos(request):
 
 def dezArquivos(request):
     return render(request, 'comparacao/dezArquivos.html')
+
 
 def extrair_texto(arquivo):
     nome = arquivo.name.lower()
@@ -35,15 +49,20 @@ def extrair_texto(arquivo):
         except UnicodeDecodeError:
             return conteudo.decode('iso-8859-1', errors='ignore')
 
+
 def obter_embedding(texto):
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
     
     payload = {
         "inputs": texto_truncado,
         "options": {"wait_for_model": True}
     }
     
-    response = requests.post(API_URL, json=payload)
+    response = session.post(API_URL, headers=headers, json=payload, timeout=15)
     response.raise_for_status()
     
     dados = response.json()
@@ -57,6 +76,7 @@ def obter_embedding(texto):
         embedding_medio = embeddings
 
     return embedding_medio.reshape(1, -1)
+
 
 @csrf_exempt
 def comparar_textos(request):
