@@ -3,11 +3,15 @@ import numpy as np
 from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
 from huggingface_hub import InferenceClient
+from django.shortcuts import render
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 client = InferenceClient(model="neuralmind/bert-base-portuguese-cased")
+
+def index(request):
+    return render(request, 'index.html')
 
 def extrair_texto(arquivo):
     """Lê o conteúdo do arquivo enviado (.txt ou .pdf) e retorna como texto."""
@@ -26,6 +30,7 @@ def extrair_texto(arquivo):
         except UnicodeDecodeError:
             return conteudo.decode('iso-8859-1', errors='ignore')
 
+@csrf_exempt
 def obter_embedding(texto):
     """Obtém os embeddings do texto através da API de Inferência do Hugging Face."""
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
@@ -51,22 +56,19 @@ def comparar(request):
     arquivos = request.FILES.getlist('arquivos')
 
     if len(arquivos) < 2:
-        return JsonResponse({'error': 'Envie pelo menos 2 arquivos (1 principal e 1 de comparação).'}, status=400)
+        return JsonResponse({'error': 'Envie pelo menos 2 arquivos.'}, status=400)
 
     try:
-        
         arquivo_ancora = arquivos[0]
         texto_ancora = extrair_texto(arquivo_ancora)
         emb_ancora = obter_embedding(texto_ancora)
 
         resultados = []
 
-        #Compara cada arquivo secundário com o âncora
         for arquivo_comp in arquivos[1:]:
             texto_comp = extrair_texto(arquivo_comp)
             emb_comp = obter_embedding(texto_comp)
 
-            # Cálculo da similaridade de cosseno
             sim = cosine_similarity(emb_ancora, emb_comp)[0][0]
 
             resultados.append({
@@ -78,5 +80,4 @@ def comparar(request):
         return JsonResponse({'resultados': resultados})
 
     except Exception as e:
-
-        return JsonResponse({'error': f"Erro no processamento com a Hugging Face: {str(e)}"}, status=500)
+        return JsonResponse({'error': f"Erro no processamento: {str(e)}"}, status=500)
