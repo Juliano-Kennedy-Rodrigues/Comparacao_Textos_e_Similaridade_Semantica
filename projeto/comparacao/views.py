@@ -11,13 +11,13 @@ from django.views.decorators.csrf import csrf_exempt
 client = InferenceClient(model="neuralmind/bert-base-portuguese-cased")
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'comparacao/index.html')
 
 def cincoArquivos(request):
-    return render(request, 'cincoArquivos.html')
+    return render(request, 'comparacao/cincoArquivos.html')
 
 def dezArquivos(request):
-    return render(request, 'dezArquivos.html')
+    return render(request, 'comparacao/dezArquivos.html')
 
 
 
