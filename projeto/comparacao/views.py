@@ -1,31 +1,25 @@
 import os
 import io
-import requests
 import numpy as np
 from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Novo endpoint oficial da API Serverless Router da Hugging Face
-API_URL = "https://router.huggingface.co/hf-inference/v1/pipeline/feature-extraction"
-MODEL_NAME = "neuralmind/bert-base-portuguese-cased"
-
+# Importa o cliente oficial da Hugging Face
+from huggingface_hub import InferenceClient
 
 HF_TOKEN = os.getenv("HF_TOKEN")
 
+# Nome do modelo BERTimbau no Hub
+MODEL_NAME = "neuralmind/bert-base-portuguese-cased"
 
-session = requests.Session()
-retries = Retry(
-    total=3,
-    backoff_factor=1,
-    status_forcelist=[500, 502, 503, 504]
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN
 )
-session.mount('https://', HTTPAdapter(max_retries=retries))
 
 
 # Views de Templates
@@ -39,6 +33,7 @@ def dezArquivos(request):
     return render(request, 'comparacao/dezArquivos.html')
 
 
+# Funções Auxiliares
 def extrair_texto(arquivo):
     nome = arquivo.name.lower()
     if nome.endswith('.pdf'):
@@ -58,23 +53,11 @@ def extrair_texto(arquivo):
 def obter_embedding(texto):
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
     
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    }
+    dados = client.feature_extraction(
+        texto_truncado,
+        model=MODEL_NAME
+    )
     
-    if HF_TOKEN:
-        headers["Authorization"] = f"Bearer {HF_TOKEN}"
-    
-    payload = {
-        "model": MODEL_NAME,
-        "inputs": texto_truncado,
-        "options": {"wait_for_model": True}
-    }
-    
-    response = session.post(API_URL, headers=headers, json=payload, timeout=20)
-    response.raise_for_status()
-    
-    dados = response.json()
     embeddings = np.array(dados)
     
     if embeddings.ndim == 3:
