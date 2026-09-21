@@ -13,6 +13,14 @@ client = InferenceClient(model="neuralmind/bert-base-portuguese-cased")
 def index(request):
     return render(request, 'index.html')
 
+def cincoArquivos(request):
+    """Renderiza a página para comparação de até 5 arquivos."""
+    return render(request, 'cincoArquivos.html')
+
+def dezArquivos(request):
+    """Renderiza a página para comparação de até 10 arquivos."""
+    return render(request, 'dezArquivos.html')
+
 def extrair_texto(arquivo):
     """Lê o conteúdo do arquivo enviado (.txt ou .pdf) e retorna como texto."""
     nome = arquivo.name.lower()
