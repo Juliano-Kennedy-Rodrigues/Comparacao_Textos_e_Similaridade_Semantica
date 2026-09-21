@@ -1,3 +1,4 @@
+import os
 import io
 import requests
 import numpy as np
@@ -10,9 +11,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-
+# Endpoint do Router do Hugging Face
 API_URL = "https://router.huggingface.co/pipeline/feature-extraction/neuralmind/bert-base-portuguese-cased"
 
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 session = requests.Session()
 retries = Retry(
@@ -57,12 +59,15 @@ def obter_embedding(texto):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
     }
     
+    if HF_TOKEN:
+        headers["Authorization"] = f"Bearer {HF_TOKEN}"
+    
     payload = {
         "inputs": texto_truncado,
         "options": {"wait_for_model": True}
     }
     
-    response = session.post(API_URL, headers=headers, json=payload, timeout=15)
+    response = session.post(API_URL, headers=headers, json=payload, timeout=20)
     response.raise_for_status()
     
     dados = response.json()
