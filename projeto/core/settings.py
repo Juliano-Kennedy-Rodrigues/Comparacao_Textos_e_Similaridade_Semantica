@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     'comparacao-textos-e-similaridade.onrender.com',
     'localhost',
     '127.0.0.1',
+    'settie.pythonanywhere.com', 'localhost', '127.0.0.1',
 ]
 
 
