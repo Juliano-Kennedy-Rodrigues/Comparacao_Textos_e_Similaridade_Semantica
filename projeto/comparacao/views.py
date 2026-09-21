@@ -19,7 +19,7 @@ def cincoArquivos(request):
 
 
 HF_TOKEN = os.getenv("HF_TOKEN")
-API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/neuralmind/bert-base-portuguese-cased"
+API_URL = "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased"
 headers = {"Authorization": f"Bearer {HF_TOKEN}"} if HF_TOKEN else {}
 
 def obter_embedding_api(texto):
@@ -28,7 +28,12 @@ def obter_embedding_api(texto):
         "options": {"wait_for_model": True}
     }
     
-    response = requests.post(API_URL, headers=headers, json=payload)
+    response = requests.post(
+        "https://api-inference.huggingface.co/models/neuralmind/bert-base-portuguese-cased",
+        headers=headers,
+        json=payload,
+        timeout=30  
+    )
     
     if response.status_code == 200:
         dados = response.json()
