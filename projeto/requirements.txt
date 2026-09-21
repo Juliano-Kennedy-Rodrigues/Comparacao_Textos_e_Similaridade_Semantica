@@ -83,3 +83,5 @@ xxhash==3.6.0
 yarl==1.23.0
 gunicorn
 whitenoise
+huggingface_hub
+pypdf
