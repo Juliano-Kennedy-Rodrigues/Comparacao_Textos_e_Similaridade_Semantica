@@ -6,7 +6,7 @@ from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-
+from huggingface_hub import InferenceClient
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -57,26 +57,21 @@ def extrair_texto(arquivo):
 def obter_embedding(texto):
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
     
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    }
+    # Inicializa o cliente oficial da Hugging Face
+    client = InferenceClient(
+        provider="hf-inference",
+        api_key=HF_TOKEN
+    )
     
-    if HF_TOKEN:
-        headers["Authorization"] = f"Bearer {HF_TOKEN}"
+    # Solicita a extração de recursos (embeddings)
+    res = client.feature_extraction(
+        texto_truncado,
+        model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )
     
-    # IMPORTANTE: "inputs" deve receber uma lista de strings [texto_truncado]
-    payload = {
-        "inputs": [texto_truncado],
-        "options": {"wait_for_model": True}
-    }
+    embeddings = np.array(res)
     
-    response = session.post(API_URL, headers=headers, json=payload, timeout=20)
-    response.raise_for_status()
-    
-    dados = response.json()
-    embeddings = np.array(dados)
-    
-    # Trata a dimensão do array para garantir o cálculo correto da Similaridade de Cosseno
+    # Tratamento das dimensões do vetor de embeddings
     if embeddings.ndim == 3:
         embedding_medio = np.mean(embeddings[0], axis=0)
     elif embeddings.ndim == 2:
