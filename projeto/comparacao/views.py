@@ -64,8 +64,9 @@ def obter_embedding(texto):
     if HF_TOKEN:
         headers["Authorization"] = f"Bearer {HF_TOKEN}"
     
+    # IMPORTANTE: "inputs" deve receber uma lista de strings [texto_truncado]
     payload = {
-        "inputs": texto_truncado,
+        "inputs": [texto_truncado],
         "options": {"wait_for_model": True}
     }
     
@@ -75,6 +76,7 @@ def obter_embedding(texto):
     dados = response.json()
     embeddings = np.array(dados)
     
+    # Trata a dimensão do array para garantir o cálculo correto da Similaridade de Cosseno
     if embeddings.ndim == 3:
         embedding_medio = np.mean(embeddings[0], axis=0)
     elif embeddings.ndim == 2:
@@ -83,7 +85,6 @@ def obter_embedding(texto):
         embedding_medio = embeddings
 
     return embedding_medio.reshape(1, -1)
-
 
 # View Principal de Comparação
 @csrf_exempt
