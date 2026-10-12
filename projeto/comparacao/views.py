@@ -6,7 +6,6 @@ from pypdf import PdfReader
 from sklearn.metrics.pairwise import cosine_similarity
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from huggingface_hub import InferenceClient
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
