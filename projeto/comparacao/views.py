@@ -56,21 +56,27 @@ def extrair_texto(arquivo):
 def obter_embedding(texto):
     texto_truncado = texto[:2000] if len(texto) > 2000 else texto
     
-    # Inicializa o cliente oficial da Hugging Face
-    client = InferenceClient(
-        provider="hf-inference",
-        api_key=HF_TOKEN
-    )
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
     
-    # Solicita a extração de recursos (embeddings)
-    res = client.feature_extraction(
-        texto_truncado,
-        model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-    )
+    if HF_TOKEN:
+        headers["Authorization"] = f"Bearer {HF_TOKEN}"
     
-    embeddings = np.array(res)
+    # URL clássica e gratuita da Inference API
+    url_classica = "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     
-    # Tratamento das dimensões do vetor de embeddings
+    payload = {
+        "inputs": [texto_truncado],
+        "options": {"wait_for_model": True}
+    }
+    
+    response = session.post(url_classica, headers=headers, json=payload, timeout=20)
+    response.raise_for_status()
+    
+    dados = response.json()
+    embeddings = np.array(dados)
+    
     if embeddings.ndim == 3:
         embedding_medio = np.mean(embeddings[0], axis=0)
     elif embeddings.ndim == 2:
