@@ -11,25 +11,36 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from sentence_transformers import SentenceTransformer, util
 
+API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
-model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-
-def minha_view_de_comparacao(request):
+def calcular_similaridade_view(request):
+    similarity = None
     if request.method == 'POST':
         texto1 = request.POST.get('texto1')
         texto2 = request.POST.get('texto2')
         
-        # Gera os embeddings e calcula a similaridade localmente
-        embedding1 = model.encode(texto1, convert_to_tensor=True)
-        embedding2 = model.encode(texto2, convert_to_tensor=True)
-        similarity = util.cos_sim(embedding1, embedding2)
+        # Token configurado nas variáveis de ambiente do Railway
+        token = os.environ.get('HF_TOKEN')
+        headers = {"Authorization": f"Bearer {token}"}
         
-        resultado = float(similarity.item())
+        payload = {
+            "inputs": {
+                "source_sentence": texto1,
+                "sentences": [texto2]
+            }
+        }
         
-        return render(request, 'comparacao/resultado.html', {'resultado': resultado})
+        response = requests.post(API_URL, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            res_data = response.json()
+            similarity = res_data[0] if isinstance(res_data, list) else res_data
+        else:
+            similarity = f"Erro na API: {response.text}"
+            
+        return render(request, 'comparacao/resultado.html', {'similarity': similarity})
         
     return render(request, 'comparacao/index.html')
-
 
 API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 

@@ -86,4 +86,3 @@ whitenoise
 huggingface_hub
 pypdf
 huggingface_hub>=0.20.0
-sentence-transformers
