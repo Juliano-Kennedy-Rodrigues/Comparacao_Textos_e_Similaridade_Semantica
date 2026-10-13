@@ -9,6 +9,27 @@ from urllib3.util.retry import Retry
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from sentence_transformers import SentenceTransformer, util
+
+
+model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
+
+def minha_view_de_comparacao(request):
+    if request.method == 'POST':
+        texto1 = request.POST.get('texto1')
+        texto2 = request.POST.get('texto2')
+        
+        # Gera os embeddings e calcula a similaridade localmente
+        embedding1 = model.encode(texto1, convert_to_tensor=True)
+        embedding2 = model.encode(texto2, convert_to_tensor=True)
+        similarity = util.cos_sim(embedding1, embedding2)
+        
+        resultado = float(similarity.item())
+        
+        return render(request, 'comparacao/resultado.html', {'resultado': resultado})
+        
+    return render(request, 'comparacao/index.html')
+
 
 API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
