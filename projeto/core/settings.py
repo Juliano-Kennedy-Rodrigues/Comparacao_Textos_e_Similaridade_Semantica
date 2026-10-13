@@ -26,11 +26,8 @@ SECRET_KEY = 'django-insecure-by3qh1g8580apme$z%u8xtcfq%rhyx8$w_co9i#qqs**-mol6s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'comparacaotextosesimilaridadesemantica-production.up.railway.app',
-    '127.0.0.1',
-    'localhost',
-]
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'projeto.comparacao',
+    'comparacao',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'projeto.core.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -74,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'projeto.core.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database

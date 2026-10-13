@@ -88,3 +88,4 @@ pypdf
 huggingface_hub>=0.20.0
 huggingface_hub
 requests
+sentence-transformers
