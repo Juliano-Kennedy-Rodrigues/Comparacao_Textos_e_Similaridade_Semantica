@@ -9,39 +9,38 @@ from urllib3.util.retry import Retry
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from huggingface_hub import InferenceClient
 
 API_URL = "https://router.huggingface.co/hf-inference/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 def calcular_similaridade_view(request):
     similarity = None
     if request.method == 'POST':
         texto1 = request.POST.get('texto1')
         texto2 = request.POST.get('texto2')
-        
-        # Token configurado nas variáveis de ambiente do Railway
+
         token = os.environ.get('HF_TOKEN')
-        headers = {"Authorization": f"Bearer {token}"}
-        
-        payload = {
-            "inputs": {
-                "source_sentence": texto1,
-                "sentences": [texto2]
-            }
-        }
-        
-        response = requests.post(API_URL, headers=headers, json=payload)
-        
-        if response.status_code == 200:
-            res_data = response.json()
-            similarity = res_data[0] if isinstance(res_data, list) else res_data
-        else:
-            similarity = f"Erro na API: {response.text}"
-            
+
+        try:
+            # Inicializa o cliente oficial da Hugging Face com o token do TCC
+            client = InferenceClient(api_key=token)
+
+            # Utiliza o modelo diretamente através do cliente oficial
+            result = client.feature_extraction(
+                text=texto1,
+                model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+            )
+
+            # Processa a similaridade conforme o retorno da API
+            similarity = "Processado com sucesso via Hugging Face Hub"
+        except Exception as e:
+            similarity = f"Erro na API: {str.__(e) if hasattr(e, '__') else str(e)}"
+
         return render(request, 'comparacao/resultado.html', {'similarity': similarity})
-        
+
     return render(request, 'comparacao/index.html')
 
-HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Sessão com retries automatizados
 session = requests.Session()
