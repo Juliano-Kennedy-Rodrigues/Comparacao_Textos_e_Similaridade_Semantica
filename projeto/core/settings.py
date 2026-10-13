@@ -27,10 +27,9 @@ SECRET_KEY = 'django-insecure-by3qh1g8580apme$z%u8xtcfq%rhyx8$w_co9i#qqs**-mol6s
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'comparacao-textos-e-similaridade.onrender.com',
-    'settie.pythonanywhere.com',
+    'comparacaotextosesimilaridadesemantica-production.up.railway.app',
+    '127.0.0.1',
     'localhost',
-    '127.0.0.1'
 ]
 
 
@@ -57,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'projeto.core.urls'
 
 TEMPLATES = [
     {
@@ -75,7 +74,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'projeto.core.wsgi.application'
 
 
 # Database
