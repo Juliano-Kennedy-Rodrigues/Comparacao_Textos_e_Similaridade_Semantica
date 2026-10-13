@@ -41,8 +41,6 @@ def calcular_similaridade_view(request):
         
     return render(request, 'comparacao/index.html')
 
-API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Sessão com retries automatizados
