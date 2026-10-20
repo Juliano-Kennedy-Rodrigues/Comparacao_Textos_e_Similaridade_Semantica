@@ -40,25 +40,25 @@ Certifique-se de ter o **Python 3.10+** instalado no seu sistema.
 
 python -m venv venv
 
-   1. **No Windows:**
+   **No Windows:**
 venv\Scripts\activate
 
-   2. **No macOS/Linux:**
+   **No macOS/Linux:**
 source venv/bin/activate
 
-4. **Instale as dependências:**
+3. **Instale as dependências:**
 
 pip install -r requirements.txt
 
-5. **Execute as migrações da base de dados:**
+4. **Execute as migrações da base de dados:**
 
 python manage.py migrate
 
-6. **Inicie o servidor de desenvolvimento:**
+5. **Inicie o servidor de desenvolvimento:**
 
 python manage.py runserver
 
-7. **Acesse a aplicação pelo seu navegador:**
+6. **Acesse a aplicação pelo seu navegador:**
 
 http://127.0.0.1:8000/
 ou use ngrokcom:  ngrok http 8000
