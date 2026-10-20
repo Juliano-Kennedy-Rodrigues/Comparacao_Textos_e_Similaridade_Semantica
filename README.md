@@ -1,7 +1,68 @@
-# Comparacao_Textos_e_Similaridade_Semantica
-Script em python feito com bibliotecas de Machine Learning da HuggingFace que busca comparar dois textos e achar seu índice de similaridade semântica. 
+# Sistema de Comparação Semântica de Textos (TCC)
 
-Artigo:
+Aplicação web desenvolvida em Django para avaliação de similaridade semântica entre documentos textuais (com suporte a ficheiros PDF e TXT) utilizando modelos de Processamento de Linguagem Natural (PLN) baseados no Transformer `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
+
+---
+
+## 🚀 Funcionalidades
+
+* **Processamento Local:** Executa o modelo de embeddings diretamente no hardware local, garantindo privacidade e independência de APIs externas pagas.
+* **Leitura de Múltiplos Formatos:** Extração automatizada de texto a partir de ficheiros PDF (`pypdf`) e texto bruto (`.txt`).
+* **Métricas de Similaridade:** Cálculo de similaridade de cosseno (`scikit-learn`) entre documentos âncora e comparados.
+* **Interface Web Dinâmica:** Design responsivo adaptado para apresentações académicas.
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+* **Backend:** Python, Django
+* **Processamento de Linguagem Natural:** `sentence-transformers`, PyTorch
+* **Computação Científica:** `NumPy`, `scikit-learn`
+* **Manipulação de Ficheiros:** `pypdf`
+* **Túnel de Rede:** Ngrok (para acesso remoto, alternativa a sites de host como PythonAnywhere e Railway)
+
+---
+
+## 📦 Pré-requisitos
+
+Certifique-se de ter o **Python 3.10+** instalado no seu sistema.
+
+---
+
+## ⚙️ Instalação e Execução Local
+
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/SEU-UTILIZADOR/NOME-DO-REPOSITORIO.git](https://github.com/SEU-UTILIZADOR/NOME-DO-REPOSITORIO.git)
+   cd NOME-DO-REPOSITORIO
+
+2. Crie e ative um ambiente virtual:
+
+python -m venv venv
+# No Windows:
+venv\Scripts\activate
+# No macOS/Linux:
+source venv/bin/activate
+
+3. Instale as dependências:
+
+pip install -r requirements.txt
+
+4. Execute as migrações da base de dados:
+
+python manage.py migrate
+
+5. Inicie o servidor de desenvolvimento:
+
+python manage.py runserver
+
+6. Acesse a aplicação pelo seu navegador:
+
+http://127.0.0.1:8000/
+ou use ngrokcom:  ngrok http 8000
 
 
-Site:
+
+LICENÇA:
+
+Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC). Sinta-se livre para utilizar o código para fins académicos ou educacionais.
