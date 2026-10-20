@@ -40,10 +40,10 @@ Certifique-se de ter o **Python 3.10+** instalado no seu sistema.
 
 python -m venv venv
 
-   1. No Windows:
+   1. **No Windows:**
 venv\Scripts\activate
 
-   2. No macOS/Linux:
+   2. **No macOS/Linux:**
 source venv/bin/activate
 
 4. **Instale as dependências:**
