@@ -36,33 +36,33 @@ Certifique-se de ter o **Python 3.10+** instalado no seu sistema.
    git clone [https://github.com/SEU-UTILIZADOR/NOME-DO-REPOSITORIO.git](https://github.com/SEU-UTILIZADOR/NOME-DO-REPOSITORIO.git)
    cd NOME-DO-REPOSITORIO
 
-2. Crie e ative um ambiente virtual:
+2. **Crie e ative um ambiente virtual:**
 
 python -m venv venv
-# No Windows:
+**No Windows:**
 venv\Scripts\activate
-# No macOS/Linux:
+**No macOS/Linux:**
 source venv/bin/activate
 
-3. Instale as dependências:
+3. **Instale as dependências:**
 
 pip install -r requirements.txt
 
-4. Execute as migrações da base de dados:
+4. **Execute as migrações da base de dados:**
 
 python manage.py migrate
 
-5. Inicie o servidor de desenvolvimento:
+5. **Inicie o servidor de desenvolvimento:**
 
 python manage.py runserver
 
-6. Acesse a aplicação pelo seu navegador:
+6. **Acesse a aplicação pelo seu navegador:**
 
 http://127.0.0.1:8000/
 ou use ngrokcom:  ngrok http 8000
 
 
 
-LICENÇA:
+## LICENÇA:
 
 Este projeto foi desenvolvido como Trabalho de Conclusão de Curso (TCC). Sinta-se livre para utilizar o código para fins académicos ou educacionais.
